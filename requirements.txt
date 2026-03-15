@@ -1,0 +1,16 @@
+pandas
+numpy
+sdv
+ctgan
+torch
+ray
+redis
+flwr
+streamlit
+cryptography
+shap
+scikit-learn
+plotly
+sqlalchemy
+opacus
+matplotlib
