@@ -1,21 +1,29 @@
-import streamlit as st # type: ignore 
-import pandas as pd # type: ignore 
+import streamlit as st
+import pandas as pd
 import sqlite3
-import plotly.express as px # type: ignore 
-from PIL import Image # type: ignore 
+import plotly.express as px
+from PIL import Image
+import os
 
-
-st.set_page_config(page_title="Federated Fraud Detection Platform",layout="wide")
-
+st.set_page_config(
+    page_title="Federated Fraud Detection Platform",
+    layout="wide"
+)
 
 st.title("Federated AI Fraud Detection Platform")
 
 
 # -------------------------
-# Load transaction dataset
+# Load transaction dataset safely
 # -------------------------
 
-df = pd.read_csv("synthetic_data/transactions.csv")
+data_path = "synthetic_data/transactions.csv"
+
+if os.path.exists(data_path):
+    df = pd.read_csv(data_path)
+else:
+    st.error("Transaction dataset not found.")
+    st.stop()
 
 
 # -------------------------
@@ -50,7 +58,12 @@ if page == "Transaction Analytics":
     col1.metric("Total Transactions", total)
     col2.metric("Fraud Cases", fraud_count)
 
-    fig = px.histogram(df, x="amount", color="fraud",title="Transaction Amount Distribution")
+    fig = px.histogram(
+        df,
+        x="amount",
+        color="fraud",
+        title="Transaction Amount Distribution"
+    )
 
     st.plotly_chart(fig)
 
@@ -86,10 +99,12 @@ elif page == "Agent Activity":
 
     st.dataframe(data)
 
-    fig = px.bar(data,
-                 x="Bank",
-                 y="Fraud Cases",
-                 title="Fraud Cases per Bank")
+    fig = px.bar(
+        data,
+        x="Bank",
+        y="Fraud Cases",
+        title="Fraud Cases per Bank"
+    )
 
     st.plotly_chart(fig)
 
@@ -118,14 +133,35 @@ elif page == "Governance Logs":
 
     st.header("Audit Logs")
 
-    conn = sqlite3.connect("governance/audit.db")
+    db_path = "governance/audit.db"
 
-    logs = pd.read_sql_query(
-        "SELECT * FROM audit_logs",
-        conn
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Ensure table exists
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS audit_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        event TEXT,
+        timestamp TEXT
     )
+    """)
 
-    st.dataframe(logs)
+    conn.commit()
+
+    try:
+        logs = pd.read_sql_query(
+            "SELECT * FROM audit_logs",
+            conn
+        )
+
+        if len(logs) > 0:
+            st.dataframe(logs)
+        else:
+            st.info("No audit logs available yet.")
+
+    except:
+        st.warning("Audit logs could not be loaded.")
 
 
 # =========================
@@ -136,6 +172,20 @@ elif page == "Explainable AI":
 
     st.header("Model Explainability (SHAP)")
 
-    img = Image.open("governance/shap_summary.png")
+    image_path = "governance/shap_summary.png"
 
-    st.image(img, caption="Feature Importance for Fraud Detection")
+    if os.path.exists(image_path):
+
+        img = Image.open(image_path)
+
+        st.image(
+            img,
+            caption="Feature Importance for Fraud Detection"
+        )
+
+    else:
+
+        st.warning(
+            "SHAP explanation image not found. "
+            "Run governance/explain.py locally to generate it."
+        )
