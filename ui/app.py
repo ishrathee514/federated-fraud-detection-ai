@@ -55,11 +55,10 @@ page = st.sidebar.selectbox(
 
 if page == "Transaction Analytics":
 
-    st.header("Transaction Analytics")
+    st.header("Transaction Analytics Dashboard")
 
     fraud_count = df["fraud"].sum()
     total = len(df)
-
     fraud_rate = round((fraud_count / total) * 100, 2)
     avg_amount = round(df["amount"].mean(), 2)
 
@@ -70,27 +69,66 @@ if page == "Transaction Analytics":
     col3.metric("Fraud Rate (%)", fraud_rate)
     col4.metric("Avg Transaction Amount", f"${avg_amount}")
 
-    fig = px.histogram(
-        df,
-        x="amount",
-        color="fraud",
-        title="Transaction Amount Distribution"
-    )
+    st.divider()
 
-    st.plotly_chart(fig)
+    tab1, tab2, tab3 = st.tabs([
+        "Overview",
+        "Fraud Analysis",
+        "Transaction Patterns"
+    ])
 
-    fraud_dist = df["fraud"].value_counts().reset_index()
-    fraud_dist.columns = ["Fraud", "Count"]
+    # --------------------
+    # TAB 1 — Overview
+    # --------------------
 
-    fig2 = px.pie(
-        fraud_dist,
-        names="Fraud",
-        values="Count",
-        title="Fraud vs Legitimate Transactions"
-    )
+    with tab1:
 
-    st.plotly_chart(fig2)
+        st.subheader("Transaction Amount Distribution")
 
+        fig = px.histogram(
+            df,
+            x="amount",
+            color="fraud",
+            title="Transaction Amount Distribution"
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    # --------------------
+    # TAB 2 — Fraud Analysis
+    # --------------------
+
+    with tab2:
+
+        st.subheader("Fraud vs Legitimate Transactions")
+
+        fraud_dist = df["fraud"].value_counts().reset_index()
+        fraud_dist.columns = ["Fraud", "Count"]
+
+        fig2 = px.pie(
+            fraud_dist,
+            names="Fraud",
+            values="Count"
+        )
+
+        st.plotly_chart(fig2, use_container_width=True)
+
+    # --------------------
+    # TAB 3 — Transaction Patterns
+    # --------------------
+
+    with tab3:
+
+        st.subheader("Transaction Amount vs Fraud")
+
+        fig3 = px.box(
+            df,
+            x="fraud",
+            y="amount",
+            title="Fraud Distribution by Amount"
+        )
+
+        st.plotly_chart(fig3, use_container_width=True)
 
 # =========================
 # PAGE 2 — Agent Activity
