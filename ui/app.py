@@ -12,6 +12,13 @@ st.set_page_config(
 
 st.title("Federated AI Fraud Detection Platform")
 
+st.markdown(
+"""
+### Secure Federated AI for Financial Fraud Detection
+
+This platform demonstrates a **multi-agent federated learning system** where multiple banks collaboratively train fraud detection models **without sharing sensitive customer data**.
+"""
+)
 
 # -------------------------
 # Load transaction dataset safely
@@ -53,10 +60,15 @@ if page == "Transaction Analytics":
     fraud_count = df["fraud"].sum()
     total = len(df)
 
-    col1, col2 = st.columns(2)
+    fraud_rate = round((fraud_count / total) * 100, 2)
+    avg_amount = round(df["amount"].mean(), 2)
+
+    col1, col2, col3, col4 = st.columns(4)
 
     col1.metric("Total Transactions", total)
     col2.metric("Fraud Cases", fraud_count)
+    col3.metric("Fraud Rate (%)", fraud_rate)
+    col4.metric("Avg Transaction Amount", f"${avg_amount}")
 
     fig = px.histogram(
         df,
@@ -66,6 +78,18 @@ if page == "Transaction Analytics":
     )
 
     st.plotly_chart(fig)
+
+    fraud_dist = df["fraud"].value_counts().reset_index()
+    fraud_dist.columns = ["Fraud", "Count"]
+
+    fig2 = px.pie(
+        fraud_dist,
+        names="Fraud",
+        values="Count",
+        title="Fraud vs Legitimate Transactions"
+    )
+
+    st.plotly_chart(fig2)
 
 
 # =========================
