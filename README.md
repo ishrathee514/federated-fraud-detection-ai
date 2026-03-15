@@ -44,7 +44,9 @@ Explainable AI (SHAP)
         │
         ▼
 Streamlit Analytics Dashboard
+
 ```
+![Architecture](docs/architecture.png)
 
 ---
 
@@ -60,6 +62,16 @@ The Streamlit dashboard provides a **real-time analytics interface** similar to 
 * Federated learning status tracking
 * Governance audit logs
 * SHAP explainability visualizations
+
+---
+
+## Dashboard Preview
+
+![Dashboard](docs/transaction_amount_distribution.png)
+![Dashboard](docs/agent_activity.png)
+![Dashboard](docs/TRANSACTION_PATTERNS.png)
+![Dashboard](docs/MODEL_EXPLAINABILITY_SHAP.png)
+![Dashboard](docs/FRAUD_LEGITIMATE_TRANSACTIONS.png)
 
 ---
 
