@@ -1,4 +1,4 @@
-# Federated AI Fraud Detection Platform
+# Federated Financial Forecasting AI Platform
 
 An end-to-end **FinTech AI system** that detects fraudulent transactions using **federated learning, multi-agent simulation, synthetic data generation, governance auditing, and explainable AI**.
 
